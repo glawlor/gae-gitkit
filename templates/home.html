@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gitkit example</title>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/googleapis/0.0.4/googleapis.min.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("identitytoolkit", "1", {packages: ["ac"], language:"en"});
+    </script>
+
+    <script type="text/javascript">
+        $(function() {
+          window.google.identitytoolkit.setConfig({
+              developerKey: "AIzaSyCWmfxj3mNJQroAz-l22VOYUp57Vplh_RY",
+              companyName: "Gitkit example",
+              callbackUrl: "{{server_url}}/callback",
+              realm: "",
+              userStatusUrl: "/status",
+              loginUrl: "/login",
+              signupUrl: "/signup",
+              homeUrl: "/",
+              logoutUrl: "/logout",
+              idps: ["Gmail", "GoogleApps", "Yahoo", "AOL", "Hotmail"],
+              tryFederatedFirst: true,
+              useCachedUserStatus: false,
+              useContextParam: false
+          });
+        $("#navbar").accountChooser();
+        {% if user %}
+            window.google.identitytoolkit.updateSavedAccount({
+                email: '{{user.email}}', // required
+                displayName: '{{user.nickname}}', // optional
+                photoUrl: '{{user.photo_url|cut:"None"}}', // optional
+                legacy: false
+            });
+            window.google.identitytoolkit.showSavedAccount('{{user.email}}')
+        {% endif %}
+      });
+    </script>
+
+    <style type="text/css">
+        #box {
+        width: 600px;
+        margin-right: auto;
+        margin-left: auto;
+        margin-top: 60px;
+        background-color:whitesmoke;
+        border: 1px solid #EEE;
+        padding: 60px;
+        font-family: verdana;
+        -moz-box-shadow:    0 8px 12px -6px black;
+        -webkit-box-shadow: 0 8px 12px -6px black;
+        box-shadow:         0 8px 12px -6px black;
+        }
+        a {text-decoration:none; color: #08C;}
+        a:hover {text-decoration:underline}
+    </style>
+
+</head>
+
+<body>
+    <div id="box" >
+        <div id="navbar"></div>
+        <div id="mydiv">
+        <h2>Gitkit on GAE/Py</h2>
+        <p>This is a bare bones example of using <a href="https://developers.google.com/identity-toolkit/">
+        Google Identity Toolkit</a> (GITkit) on App Engine for Python</p>
+        <p>Get the code on Github here: <a href="http://github.com/glawlor/gae-gitkit">gae-gitkit</a>
+        {% if user %}
+        <p>Any questions? Contact me at <a href="mailto:goodwin.lawlor@gmail.com" >goodwin.lawlor@gmail.com</a>
+        {% endif %}
+        </div>
+    </div>
+</body>
+
+</html>

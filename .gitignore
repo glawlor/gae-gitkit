@@ -1,4 +1,6 @@
 *.py[co]
+*.komodoproject
+*.kpf
 
 # Packages
 *.egg

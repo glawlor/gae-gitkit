@@ -1,0 +1,30 @@
+application: gae-gitkit
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /favicon\.ico
+  static_files: favicon.ico
+  upload: favicon\.ico
+
+- url: /
+  script: main.py
+  
+- url: /callback
+  script: gitkit.py
+  
+- url: /login
+  script: gitkit.py  
+  
+- url: /logout
+  script: gitkit.py
+  
+- url: /status
+  script: gitkit.py
+
+- url: /signup
+  script: gitkit.py
+  
+- url: /_ah/xrds
+  script: gitkit.py
