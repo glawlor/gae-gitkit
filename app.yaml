@@ -1,30 +1,40 @@
 application: gae-gitkit
-version: 1
-runtime: python
+version: test
+runtime: python27
 api_version: 1
+threadsafe: yes
 
 handlers:
 - url: /favicon\.ico
   static_files: favicon.ico
   upload: favicon\.ico
-
+  
 - url: /
-  script: main.py
+  script: main.app
   
 - url: /callback
-  script: gitkit.py
+  script: gitkit.app
   
 - url: /login
-  script: gitkit.py  
+  script: gitkit.app
+  
+- url: /legacylogin
+  script: gitkit.app  
   
 - url: /logout
-  script: gitkit.py
+  script: gitkit.app
   
 - url: /status
-  script: gitkit.py
+  script: gitkit.app
 
 - url: /signup
-  script: gitkit.py
+  script: gitkit.app
   
 - url: /_ah/xrds
-  script: gitkit.py
+
+  script: gitkit.app
+
+libraries:
+- name: webapp2
+  version: "2.5.1"
+

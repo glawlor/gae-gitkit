@@ -1,23 +1,20 @@
 #!/usr/bin/env python
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp import util
-from google.appengine.ext.webapp import template
-from users import User, get_current_user
+import webapp2
 import os
 import logging
 import urllib2
+from google.appengine.ext.webapp import template
+from users import User, get_current_user
+from config import SERVER_URL, API_KEY, _DEBUG
 
 try:
     import json
 except:
     from django.utils import simplejson as json
 
-_DEBUG = True
 
-class CallbackHandler(webapp.RequestHandler):
+class CallbackHandler(webapp2.RequestHandler):
     VERIFY_URL = 'https://www.googleapis.com/identitytoolkit/v1/relyingparty/verifyAssertion?key='
-    #Insert your own Google developer API key here
-    API_KEY = 'Your-dev-key-here'
 
     def get(self):
         self.get_or_post()
@@ -43,13 +40,8 @@ class CallbackHandler(webapp.RequestHandler):
         if response:
             logging.info('Federated login success!')
             openid_values = self.get_openid_values(response)
-            values = dict({
-                'email':        openid_values.get('email'),
-                'registered':   'true',
-                'success':      True
-            })
 
-            self.render_gitkit(values)
+            self.render_gitkit(openid_values)
 
             # fed_id changes (in gmail anyway) - use email for keyname...
             user = User.get_or_insert(openid_values.get('email'),
@@ -96,7 +88,8 @@ class CallbackHandler(webapp.RequestHandler):
             params = json.dumps(postData)
             cookies = urllib2.HTTPCookieProcessor()
             opener = urllib2.build_opener(cookies)
-            request = urllib2.Request(url = self.VERIFY_URL + self.API_KEY,
+
+            request = urllib2.Request(url = self.VERIFY_URL + API_KEY,
                                       headers = { 'Content-Type':
                                                   'application/json' },
                                       data = params)
@@ -131,35 +124,41 @@ class CallbackHandler(webapp.RequestHandler):
             logging.info(e)
             return None
 
-    def render_gitkit(self, values = {}, success=True):
+    def render_gitkit(self, values = {}):
         '''Render the html that notifies gitkit of success/fail
 
            values is a dict that provides values to the template. Render a succes is
            default, set success=False to render a fail
         '''
-        if success:
-            func = ('window.google.identitytoolkit.notifyFederatedSuccess({ "email": "%s", "registered": %s });'
-                % (values['email'], values['registered']))
-        else:
-            func = 'window.google.identitytoolkit.notifyFederatedError();'
+
 
         html = '''<!DOCTYPE html>
 <html>
     <head>
-        <script type='text/javascript' src='https://ajax.googleapis.com/jsapi'></script>
-        <script type='text/javascript'>
-          google.load("identitytoolkit", "1", {packages: ["notify"]});
-        </script>
-        <script type='text/javascript'>
-        %s
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/jsapi"></script>
+        <script type="text/javascript" src="https://www.accountchooser.com/client.js"></script>
+        <script type="text/javascript">
+          google.load('identitytoolkit', '2', {packages: ['store']});
+          jQuery(function() {
+            var homeUrl = '%s'; // Your home page URL.
+            var account = {
+              email: '%s',  // required
+              displayName: '%s',  // optional
+              photoUrl: '%s'  // optional
+            };
+            // Store the account then return to homeUrl.
+            window.google.identitytoolkit.storeAccount(account, homeUrl);
+          });
         </script>
     </head>
     <body></body>
-</html>''' % func
+</html>
+        ''' % (SERVER_URL, values['email'], values['display_name'], values['photo_url'])
 
         self.response.out.write(html)
 
-class LoginHandler(webapp.RequestHandler):
+class LegacyLoginHandler(webapp2.RequestHandler):
     '''If legacy login was allowed, this handles the request.
 
     But we're not allowed for now... maybe later.
@@ -167,8 +166,16 @@ class LoginHandler(webapp.RequestHandler):
 
     def get(self):
         self.error(403)
+        
+class LoginHandler(webapp2.RequestHandler):
+    def get(self):
+        user = get_current_user()
+        values = {'server_url': SERVER_URL, 'api_key': API_KEY, 'user': user}
+            
+        path = os.path.join(os.path.dirname(__file__), 'templates', 'login.html')
+        self.response.out.write(template.render(path, values, debug=True))
 
-class LogoutHandler(webapp.RequestHandler):
+class LogoutHandler(webapp2.RequestHandler):
 
     def get(self):
         user = get_current_user()
@@ -179,7 +186,7 @@ class LogoutHandler(webapp.RequestHandler):
 
         self.redirect("/")
 
-class StatusHandler(webapp.RequestHandler):
+class StatusHandler(webapp2.RequestHandler):
     '''Return response if email is already registered
 
     Request params: email=name@domain
@@ -190,8 +197,9 @@ class StatusHandler(webapp.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(json.dumps({"registered": False}))
 
-class SignupHandler(webapp.RequestHandler):
-    '''Hangle the signup page...
+
+class SignupHandler(webapp2.RequestHandler):
+    '''Handle the signup page...
 
     We're not going to allow legacy login
     We'll redirect to an explanation page.
@@ -200,7 +208,7 @@ class SignupHandler(webapp.RequestHandler):
     def get(self):
         self.redirect("/")
 
-class XRDSHandler(webapp.RequestHandler):
+class XRDSHandler(webapp2.RequestHandler):
     '''This response is required for the Aol login.
 
     From the forum, the location of this repsonse is set in a X-XRDS-Location
@@ -218,14 +226,15 @@ class XRDSHandler(webapp.RequestHandler):
 
   <Service xmlns="xri://$xrd*($v*2.0)">
     <Type>http://specs.openid.net/auth/2.0/return_to</Type>
-    <URI>http://gae-gitkit.appspot.com/callback</URI>
+    <URI>{0}/callback</URI>
   </Service>
 
   </XRD>
-</xrds:XRDS>''')
+</xrds:XRDS>'''.format(SERVER_URL))
 
 _URLS = [
   ('/callback', CallbackHandler),
+  ('/legacylogin', LegacyLoginHandler),
   ('/login', LoginHandler),
   ('/logout', LogoutHandler),
   ('/status', StatusHandler),
@@ -233,11 +242,6 @@ _URLS = [
   ('/_ah/xrds', XRDSHandler)
 ]
 
-def main():
-    application = webapp.WSGIApplication(_URLS,
-                                         debug=_DEBUG)
-    util.run_wsgi_app(application)
+app = webapp2.WSGIApplication(_URLS,
+                              debug=_DEBUG)
 
-
-if __name__ == '__main__':
-  main()

@@ -1,68 +1,73 @@
 <!DOCTYPE html>
+
 <html>
 <head>
-    <title>Gitkit example</title>
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/googleapis/0.0.4/googleapis.min.js"></script>
-    <script type="text/javascript" src="//ajax.googleapis.com/jsapi"></script>
-    <script type="text/javascript">
-      google.load("identitytoolkit", "1", {packages: ["ac"], language:"en"});
-    </script>
-
-    <script type="text/javascript">
-        $(function() {
-          window.google.identitytoolkit.setConfig({
-              developerKey: "AIzaSyCWmfxj3mNJQroAz-l22VOYUp57Vplh_RY",
-              companyName: "Gitkit example",
-              callbackUrl: "{{server_url}}/callback",
-              realm: "",
-              userStatusUrl: "/status",
-              loginUrl: "/login",
-              signupUrl: "/signup",
-              homeUrl: "/",
-              logoutUrl: "/logout",
-              idps: ["Gmail", "GoogleApps", "Yahoo", "AOL", "Hotmail"],
-              tryFederatedFirst: true,
-              useCachedUserStatus: false,
-              useContextParam: false
-          });
-        $("#navbar").accountChooser();
-        {% if user %}
-            window.google.identitytoolkit.updateSavedAccount({
-                email: '{{user.email}}', // required
-                displayName: '{{user.nickname}}', // optional
-                photoUrl: '{{user.photo_url|cut:"None"}}', // optional
-                legacy: false
-            });
-            window.google.identitytoolkit.showSavedAccount('{{user.email}}')
-        {% endif %}
-      });
-    </script>
-
+    <title>GAE Gitkit</title>
     <style type="text/css">
-        #box {
-        width: 600px;
-        margin-right: auto;
-        margin-left: auto;
-        margin-top: 60px;
-        background-color:whitesmoke;
-        border: 1px solid #EEE;
-        padding: 60px;
-        font-family: verdana;
-        -moz-box-shadow:    0 8px 12px -6px black;
-        -webkit-box-shadow: 0 8px 12px -6px black;
-        box-shadow:         0 8px 12px -6px black;
-        }
-        a {text-decoration:none; color: #08C;}
-        a:hover {text-decoration:underline}
-    </style>
+    .button {
+       border-top: 1px solid #96d1f8;
+       background: #65a9d7;
+       background: -webkit-gradient(linear, left top, left bottom, from(#3e779d), to(#65a9d7));
+       background: -webkit-linear-gradient(top, #3e779d, #65a9d7);
+       background: -moz-linear-gradient(top, #3e779d, #65a9d7);
+       background: -ms-linear-gradient(top, #3e779d, #65a9d7);
+       background: -o-linear-gradient(top, #3e779d, #65a9d7);
+       padding: 9px 18px;
+       -webkit-border-radius: 5px;
+       -moz-border-radius: 5px;
+       border-radius: 5px;
+       -webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
+       -moz-box-shadow: rgba(0,0,0,1) 0 1px 0;
+       box-shadow: rgba(0,0,0,1) 0 1px 0;
+       text-shadow: rgba(0,0,0,.4) 0 1px 0;
+       color: white;
+       font-size: 16px;
+       font-family: Georgia, serif;
+       text-decoration: none;
+       vertical-align: middle;
+       }
+    .button:hover {
+       border-top-color: #28597a;
+       background: #28597a;
+       color: #ccc;
+       }
+    .button:active {
+       border-top-color: #1b435e;
+       background: #1b435e;
+       }
+    
+    .button img {vertical-align: middle}
 
+    #box {
+    width: 600px; 
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: 60px; 
+    background-color:whitesmoke;
+    border: 1px solid #EEE;
+    padding: 60px; 
+    font-family: verdana;
+    -moz-box-shadow:    0 8px 12px -6px black;
+    -webkit-box-shadow: 0 8px 12px -6px black;
+    box-shadow:         0 8px 12px -6px black;
+    }
+    </style>
 </head>
 
 <body>
     <div id="box" >
-        <div id="navbar"></div>
+        {% if user %}
+        <a href="/logout" class="button" >
+            <img src="https://www.google.com/uds/modules/identitytoolkit/image/signin-keyhole-light.png">
+            Sign out
+        </a>
+        {% else %}
+        <a href="/login" class="button" >
+            <img src="https://www.google.com/uds/modules/identitytoolkit/image/signin-keyhole-light.png">
+            Sign in
+        </a>
+        {% endif %}
+
         <div id="mydiv">
         <h2>Gitkit on GAE/Py</h2>
         <p>This is a bare bones example of using <a href="https://developers.google.com/identity-toolkit/">
@@ -73,6 +78,7 @@
         {% endif %}
         </div>
     </div>
-</body>
 
+
+</body>
 </html>

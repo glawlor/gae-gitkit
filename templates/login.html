@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gitkit example</title>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min.js"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/jsapi"></script>
+<script type="text/javascript" src="//www.accountchooser.com/client.js"></script>
+<script type="text/javascript">
+  function load() {
+    google.load("identitytoolkit", "2", {packages: ["ac"], language:"en", callback: callback});
+  }
+  function callback() {
+    window.google.identitytoolkit.setConfig({
+        developerKey: "{{api_key}}",
+        companyName: "Gitkit example",
+        callbackUrl: "{{server_url}}/callback",
+        realm: "{{server_url}}",
+        userStatusUrl: "/status",
+        loginUrl: "/legacylogin",
+        signupUrl: "/signup",
+        homeUrl: "/",
+        logoutUrl: "/logout",
+        idps: ["Gmail", "GoogleApps", "Yahoo", "AOL", "Hotmail"],
+        tryFederatedFirst: true,
+        useContextParam: false,
+        language: "en",
+    });
+    window.google.identitytoolkit.init();
+  }
+</script>
+
+<script type="text/javascript" src="//apis.google.com/js/client.js?onload=load"></script>
+     
+</head>
+
+<body>
+</body>
+</html>
