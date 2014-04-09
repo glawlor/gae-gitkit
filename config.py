@@ -1,4 +1,6 @@
 import os
+# The values below are here as an example - please insert your own.
+
 
 #generate your own unique cookie key here to secure your session cookie
 #Tip: In a python interpreter you can use "os.urandom(64).encode('base64')" to generate the key
