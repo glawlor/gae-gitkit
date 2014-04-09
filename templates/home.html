@@ -26,35 +26,39 @@
                 useContextParam: false
             });
             $("#navbar").accountChooser();
+            {% if user %}
+                window.google.identitytoolkit.updateSavedAccount({
+                    email: '{{user.email}}', // required
+                    displayName: '{{user.nickname}}', // optional
+                    photoUrl: '{{user.photo_url|cut:"None"}}', // optional
+                    legacy: false
+                });
+                window.google.identitytoolkit.showSavedAccount('{{user.email}}')
+            {% endif %}
         };
-        {% if user %}
-            window.google.identitytoolkit.updateSavedAccount({
-                email: '{{user.email}}', // required
-                displayName: '{{user.nickname}}', // optional
-                photoUrl: '{{user.photo_url|cut:"None"}}', // optional
-                legacy: false
-            });
-            window.google.identitytoolkit.showSavedAccount('{{user.email}}')
-        {% endif %}
-      });
     </script>
     <script type="text/javascript" src="https://apis.google.com/js/client.js?onload=load"></script>
     <style type="text/css">
         #box {
-        width: 600px;
-        margin-right: auto;
-        margin-left: auto;
-        margin-top: 60px;
-        background-color:whitesmoke;
-        border: 1px solid #EEE;
-        padding: 60px;
-        font-family: verdana;
-        -moz-box-shadow:    0 8px 12px -6px black;
-        -webkit-box-shadow: 0 8px 12px -6px black;
-        box-shadow:         0 8px 12px -6px black;
+            width: 600px;
+            margin-right: auto;
+            margin-left: auto;
+            margin-top: 60px;
+            background-color:whitesmoke;
+            border: 1px solid #EEE;
+            padding: 60px;
+            font-family: verdana;
+            -moz-box-shadow:    0 8px 12px -6px black;
+            -webkit-box-shadow: 0 8px 12px -6px black;
+            box-shadow:         0 8px 12px -6px black;
+            }
+            a {text-decoration:none; color: #08C;}
+            a:hover {text-decoration:underline}
+        #navbar {
+            position: relative;
+            z-index: 1;
+            float: right;
         }
-        a {text-decoration:none; color: #08C;}
-        a:hover {text-decoration:underline}
     </style>
 
 </head>

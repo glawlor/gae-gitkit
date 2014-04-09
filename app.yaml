@@ -1,8 +1,7 @@
 application: gae-gitkit
 version: v1
-runtime: python27
+runtime: python
 api_version: 1
-threadsafe: true
 
 handlers:
 - url: /favicon\.ico
