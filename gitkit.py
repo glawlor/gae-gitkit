@@ -58,7 +58,6 @@ class CallbackHandler(webapp2.RequestHandler):
             user.login()
         else:
             logging.info('Problem with response from IDP')
-            self.render_gitkit(success=False)
 
     def get_openid_values(self, response):
         values = {}
