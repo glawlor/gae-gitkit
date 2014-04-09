@@ -36,7 +36,7 @@
        background: #1b435e;
        }
     
-    .button img {vertical-align: middle}
+    .button img {vertical-align: middle; height: 24px}
 
     #box {
     width: 600px; 
@@ -58,7 +58,11 @@
     <div id="box" >
         {% if user %}
         <a href="/logout" class="button" >
-            <img src="https://www.google.com/uds/modules/identitytoolkit/image/signin-keyhole-light.png">
+            {% if user.photo_url == None %}
+            <img src="http://www.google.com/uds/modules/identitytoolkit/image/nophoto.png">
+            {% else %}
+            <img src="{{user.photo_url}}">
+            {% endif %}
             Sign out
         </a>
         {% else %}
@@ -70,8 +74,12 @@
 
         <div id="mydiv">
         <h2>Gitkit on GAE/Py</h2>
+        {% if user %}
+        <p>Hi {{user.display_name}},</p>
+        {% endif %}
         <p>This is a bare bones example of using <a href="https://developers.google.com/identity-toolkit/">
-        Google Identity Toolkit</a> (GITkit) on App Engine for Python</p>
+        Google Identity Toolkit</a> (GITkit v2) on App Engine for Python</p>
+        <p>You can see GITkit v1 running here: <a href="http://v1.gae-gitkit.appspot.com">http://v1.gae-gitkit.appspot.com</a></p>
         <p>Get the code on Github here: <a href="http://github.com/glawlor/gae-gitkit">gae-gitkit</a>
         {% if user %}
         <p>Any questions? Contact me at <a href="mailto:goodwin.lawlor@gmail.com" >goodwin.lawlor@gmail.com</a>

@@ -10,7 +10,7 @@ COOKIE_KEY = 'vGkK3LfSaOFKNS2iZZgbCemUvm6xfIU5k64RU180nYFhKF5sF5plIViGtzMZWLJI0y
 _DEV_SERVER_URL = 'http://localhost:9080'
 
 # URL for the production app engine server
-_PROD_SERVER_URL = 'http://test.gae-gitkit.appspot.com'
+_PROD_SERVER_URL = 'http://gae-gitkit.appspot.com'
 
 # Your API_KEY for identity toolkit on the Google dev console
 API_KEY = 'AIzaSyCWmfxj3mNJQroAz-l22VOYUp57Vplh_RY'
